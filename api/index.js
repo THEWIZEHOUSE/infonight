@@ -23,7 +23,7 @@ export default async function handler(request, response) {
     const expiresAt = Date.now() + twoDaysInMs;
 
     const linkData = {
-      targetUrl: 'https://THEWIZEHOUSE.github.io/TWH.github.io/',
+      targetUrl: 'https://thewizehouse.com/';
       createdAt: Date.now(),
       expiresAt: expiresAt,
     };
