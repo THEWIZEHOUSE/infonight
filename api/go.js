@@ -15,7 +15,7 @@ export default async function handler(request, response) {
       return response.status(400).send('Link ID is missing.');
     }
 
-    const rawData = await redis.get(`link:${id}`);
+   const rawData = await redis.get('link:' + id);
 
     if (!rawData) {
       return response.status(404).send('This link does not exist or has already been used.');
