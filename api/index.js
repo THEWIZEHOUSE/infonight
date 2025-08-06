@@ -1,6 +1,5 @@
 import { Redis } from '@upstash/redis';
 
-// แก้ไข: ระบุ URL และ Token ของ Database โดยตรงจาก "กุญแจ" ที่เรามี
 const redis = new Redis({
   url: process.env.KV_REST_API_URL,
   token: process.env.KV_REST_API_TOKEN,
@@ -18,11 +17,13 @@ export default async function handler(request, response) {
       expiresAt: expiresAt,
     };
 
-    await redis.set(`link:${uniqueId}`, JSON.stringify(linkData), {
+    // แก้ไขไวยากรณ์จุดที่ 1
+    await redis.set('link:' + uniqueId, JSON.stringify(linkData), {
       ex: 172800, // 2 days in seconds
     });
 
-    const generatedLink = `https://infonight.vercel.app/api/go?id=${uniqueId}`;
+    // แก้ไขไวยากรณ์จุดที่ 2
+    const generatedLink = 'https://infonight.vercel.app/api/go?id=' + uniqueId;
 
     response.status(200).send(`
       <!DOCTYPE html>
