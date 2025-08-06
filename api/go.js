@@ -1,11 +1,13 @@
-import { Redis } from '@upstash/redis';
+// เปลี่ยนจาก import เป็น require
+const { Redis } = require('@upstash/redis');
 
 const redis = new Redis({
   url: process.env.KV_REST_API_URL,
   token: process.env.KV_REST_API_TOKEN,
 });
 
-export default async function handler(request, response) {
+// เปลี่ยนจาก export default เป็น module.exports
+module.exports = async (request, response) => {
   try {
     const { id } = request.query;
 
@@ -13,7 +15,6 @@ export default async function handler(request, response) {
       return response.status(400).send('Link ID is missing.');
     }
 
-    // แก้ไขไวยากรณ์จุดที่ 1
     const rawData = await redis.get('link:' + id);
 
     if (!rawData) {
@@ -24,7 +25,6 @@ export default async function handler(request, response) {
     const { targetUrl, expiresAt } = linkData;
 
     if (Date.now() > expiresAt) {
-      // แก้ไขไวยากรณ์จุดที่ 2
       await redis.del('link:' + id);
       return response.status(410).send('This link has expired.');
     }
@@ -34,4 +34,4 @@ export default async function handler(request, response) {
     console.error(error);
     response.status(500).send('An error occurred while processing the link.');
   }
-}
+};
