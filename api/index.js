@@ -5,7 +5,7 @@ export default function handler(request, response) {
 
   // ▼▼▼ สำคัญมาก! แก้ไข URL นี้ให้เป็นที่อยู่ของเว็บวิดีโอของคุณบน GitHub Pages ▼▼▼
   // ตัวอย่าง: https://THEWIZEHOUSE.github.io/video-page/ (ถ้า repo วิดีโอชื่อ video-page)
-  const targetUrl = 'https://THEWIZEHOUSE.github.io/your-video-repo/';
+  const targetUrl = 'https://THEWIZEHOUSE.github.io/TWH.github.io/';
 
   // สร้างรหัสเฉพาะตัวแบบสุ่มขึ้นมาใหม่
   const uniqueId = Math.random().toString(36).substring(2, 15);
