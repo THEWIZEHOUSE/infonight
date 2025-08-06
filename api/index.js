@@ -10,34 +10,61 @@ export default async function handler(request, response) {
     const uniqueId = Math.random().toString(36).substring(2, 10);
     const twoDaysInMs = 2 * 24 * 60 * 60 * 1000;
     const expiresAt = Date.now() + twoDaysInMs;
-
+    
     const linkData = {
       targetUrl: 'https://THEWIZEHOUSE.github.io/TWH.github.io/',
       createdAt: Date.now(),
       expiresAt: expiresAt,
     };
 
-    // แก้ไขไวยากรณ์จุดที่ 1
     await redis.set('link:' + uniqueId, JSON.stringify(linkData), {
       ex: 172800, // 2 days in seconds
     });
-
-    // แก้ไขไวยากรณ์จุดที่ 2
+    
     const generatedLink = 'https://infonight.vercel.app/api/go?id=' + uniqueId;
-
+    
+    // --- ส่วนของหน้าเว็บที่แสดงผล (อัปเดตใหม่แล้ว) ---
     response.status(200).send(`
       <!DOCTYPE html>
-      <html>
+      <html lang="th">
       <head>
-        <title>Link Generated</title>
-        <style>body { font-family: sans-serif; display: grid; place-content: center; min-height: 100vh; background: #f0f2f5; text-align: center; } .container { background: white; padding: 40px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); } input { font-size: 1rem; padding: 10px; width: 100%; max-width: 400px; border: 1px solid #ccc; border-radius: 4px; margin-top: 10px; }</style>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Infonight Link is ready!</title>
+        <style>
+          body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; display: grid; place-content: center; min-height: 100vh; background: #f0f2f5; text-align: center; margin: 20px;}
+          .container { background: white; padding: 30px 40px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+          .input-group { display: flex; align-items: center; margin-top: 20px; }
+          input { font-size: 1rem; padding: 10px; width: 100%; max-width: 350px; border: 1px solid #ccc; border-radius: 4px; border-top-right-radius: 0; border-bottom-right-radius: 0;}
+          button { font-size: 1rem; padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 4px; border-top-left-radius: 0; border-bottom-left-radius: 0; cursor: pointer; white-space: nowrap; }
+          button:hover { background-color: #0056b3; }
+        </style>
       </head>
       <body>
         <div class="container">
-          <h1>Your new link is ready!</h1>
+          <h1>Infonight link is ready!</h1>
           <p>This link will expire in 2 days.</p>
-          <input type="text" value="${generatedLink}" readonly onclick="this.select()">
+          <div class="input-group">
+            <input type="text" value="${generatedLink}" id="linkInput" readonly>
+            <button onclick="copyLink()" id="copyButton">COPY</button>
+          </div>
         </div>
+        <script>
+          function copyLink() {
+            const linkInput = document.getElementById("linkInput");
+            linkInput.select();
+            // สำหรับมือถือ
+            linkInput.setSelectionRange(0, 99999); 
+            
+            // ใช้ API สมัยใหม่ในการคัดลอก
+            navigator.clipboard.writeText(linkInput.value);
+            
+            // แจ้งผู้ใช้ว่าคัดลอกแล้ว
+            const copyButton = document.getElementById("copyButton");
+            copyButton.textContent = 'COPIED!';
+            setTimeout(() => { copyButton.textContent = 'COPY'; }, 2000);
+          }
+        </script>
       </body>
       </html>
     `);
