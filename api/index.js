@@ -1,7 +1,6 @@
 // เปลี่ยนจาก import เป็น require
 const { Redis } = require('@upstash/redis');
 
-// เปลี่ยนวิธีเชื่อมต่อเล็กน้อยเพื่อให้เข้ากับ require
 const redis = new Redis({
   url: process.env.KV_REST_API_URL,
   token: process.env.KV_REST_API_TOKEN,
@@ -10,6 +9,12 @@ const redis = new Redis({
 // เปลี่ยนจาก export default เป็น module.exports
 module.exports = async (request, response) => {
   try {
+    const { secret } = request.query;
+
+    if (secret !== process.env.GENERATION_SECRET) {
+      return response.status(403).send('Forbidden: You do not have permission to generate a new link.');
+    }
+
     const uniqueId = Math.random().toString(36).substring(2, 10);
     const twoDaysInMs = 2 * 24 * 60 * 60 * 1000;
     const expiresAt = Date.now() + twoDaysInMs;
